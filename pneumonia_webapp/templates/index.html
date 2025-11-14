@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pneumonia Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            max-width: 1000px; /* Wider for landscape orientation */
+            width: 100%;
+            display: flex;
+            flex-direction: row; /* Landscape layout */
+            align-items: stretch;
+        }
+
+        .left-column {
+            flex: 0 0 40%;
+            display: flex;
+            flex-direction: column;
+            padding-right: 30px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .right-column {
+            flex: 0 0 60%;
+            padding-left: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .features {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            font-size: 14px;
+        }
+
+        .upload-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #5a67d8;
+            background-color: #ebf4ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #667eea;
+        }
+
+        .upload-text {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .upload-hint {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #f7fafc;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .patient-info {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #555555 0%, #333333 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:enabled:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 24px;
+            }
+            .left-column {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                padding-right: 0;
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            .right-column {
+                padding-left: 0;
+                width: 100%;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-column">
+            <div class="logo">🏥</div>
+            <h1>Pneumonia Detection</h1>
+            <p class="subtitle">Upload a chest X-ray image to detect pneumonia using our AI-powered analysis system</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🔍</div>
+                    <div class="feature-text">Advanced AI analysis of chest X-rays</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">Results in seconds</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">Confidence score with detailed analysis</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-text">Secure and private processing</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <form id="upload-form" action="/predict" method="POST" enctype="multipart/form-data">
+                <div class="upload-container">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Drag & Drop X-ray Image</div>
+                        <div class="upload-hint">or click to browse files</div>
+                        <input type="file" name="file" id="file-input" class="file-input" accept="image/png, image/jpeg, image/jpg">
+                    </div>
+                    <div id="selected-file" class="selected-file">No file selected</div>
+                </div>
+
+                <div class="patient-info">
+                    <h2 style="margin-bottom: 15px; font-size: 20px;">Patient Information</h2>
+                    <div class="form-group">
+                        <label for="patientName">Patient Name</label>
+                        <input type="text" id="patientName" name="patientName" placeholder="Enter patient name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patientAge">Patient Age</label>
+                        <input type="number" id="patientAge" name="patientAge" placeholder="Enter age" min="0" max="120">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patientGender">Gender</label>
+                        <select id="patientGender" name="patientGender">
+                            <option value="" disabled selected>Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                    <span>Analyze X-ray</span>
+                    <span>→</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const selectedFileText = document.getElementById('selected-file');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Handle click on upload area
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Handle file selection
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    selectedFileText.textContent = `Selected: ${this.files[0].name}`;
+                    selectedFileText.style.display = 'block';
+                    submitBtn.disabled = false;
+                } else {
+                    selectedFileText.textContent = 'No file selected';
+                    selectedFileText.style.display = 'none';
+                    submitBtn.disabled = true;
+                }
+            });
+            
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                this.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    selectedFileText.textContent = `Selected: ${e.dataTransfer.files[0].name}`;
+                    selectedFileText.style.display = 'block';
+                    submitBtn.disabled = false;
+                    
+                    // Trigger change event
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

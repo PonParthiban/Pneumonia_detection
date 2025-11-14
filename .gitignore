@@ -1,0 +1,27 @@
+# python
+__pycache__/
+*.pyc
+env/
+venv/
+*.egg-info/
+
+# IDE/settings
+.vscode/
+.idea/
+
+# logs and temp files
+*.log
+tempCodeRunnerFile.py
+
+# datasets and heavy folders
+chest_xray/
+data/
+datasets/
+models/
+
+# model formats
+*.pt
+*.pth
+*.h5
+*.onnx
+*.pkl
